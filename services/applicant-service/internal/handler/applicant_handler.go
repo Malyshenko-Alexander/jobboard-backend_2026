@@ -135,7 +135,7 @@ func (h *ApplicantHandler) UpsertResume(w http.ResponseWriter, r *http.Request) 
 }
 
 // UserCreatedHook godoc
-// @Summary      Stub hook for user.created event
+// @Summary      Debug hook for user.created (prefer RabbitMQ)
 // @Description  Temporary HTTP stand-in for RabbitMQ consumer. Remove when real AMQP consumer is wired.
 // @Tags         internal
 // @Accept       json

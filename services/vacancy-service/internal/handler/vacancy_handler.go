@@ -197,7 +197,7 @@ func (h *VacancyHandler) DeleteVacancy(w http.ResponseWriter, r *http.Request) {
 }
 
 // EmployerUpdatedHook godoc
-// @Summary      Stub hook for employer.updated event
+// @Summary      Debug hook for employer.updated (prefer RabbitMQ)
 // @Tags         internal
 // @Accept       json
 // @Param        body  body  model.EmployerUpdatedEvent  true  "employer.updated payload"

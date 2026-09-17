@@ -49,7 +49,10 @@ func main() {
 	}
 
 	tokens := authtoken.NewManager(cfg.JWTSecret, cfg.TokenTTL())
-	publisher := events.NewStubPublisher()
+	publisher, err := events.NewRabbitPublisher(cfg.RabbitURL)
+	if err != nil {
+		log.Fatalf("rabbit publisher: %v", err)
+	}
 	defer publisher.Close()
 
 	userRepo := repository.NewUserRepository(pool)

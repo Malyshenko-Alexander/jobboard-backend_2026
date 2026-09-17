@@ -58,7 +58,7 @@ func (h *EmployerHandler) GetProfile(w http.ResponseWriter, r *http.Request) {
 
 // UpdateProfile godoc
 // @Summary      Update employer company profile
-// @Description  Updates company data and publishes employer.updated event (stub).
+// @Description  Updates company data and publishes employer.updated to RabbitMQ.
 // @Tags         employer
 // @Accept       json
 // @Produce      json
@@ -112,7 +112,7 @@ func (h *EmployerHandler) GetCompany(w http.ResponseWriter, r *http.Request) {
 }
 
 // UserCreatedHook godoc
-// @Summary      Stub hook for user.created event
+// @Summary      Debug hook for user.created (prefer RabbitMQ)
 // @Description  Temporary HTTP stand-in for RabbitMQ consumer
 // @Tags         internal
 // @Accept       json

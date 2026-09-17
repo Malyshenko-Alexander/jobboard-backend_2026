@@ -31,7 +31,7 @@ func NewAuthHandler(svc authService, tokens *authtoken.Manager) *AuthHandler {
 
 // Register godoc
 // @Summary      Register a new user
-// @Description  Creates applicant or employer account and returns JWT. Publishes user.created event (stub).
+// @Description  Creates applicant or employer account and returns JWT. Publishes user.created to RabbitMQ.
 // @Tags         auth
 // @Accept       json
 // @Produce      json

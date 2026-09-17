@@ -53,8 +53,11 @@ func main() {
 	resumeRepo := repository.NewResumeRepository(pool)
 	appSvc := service.NewApplicantService(profileRepo, resumeRepo)
 
-	// Stub consumer: no RabbitMQ yet. HTTP hook mimics the message handler.
-	consumer := events.NewStubConsumer(appSvc)
+	// RabbitMQ consumer for user.created (HTTP hook below is only for manual debug).
+	consumer, err := events.NewRabbitConsumer(cfg.RabbitURL, appSvc)
+	if err != nil {
+		log.Fatalf("rabbit consumer: %v", err)
+	}
 	if err := consumer.Start(ctx); err != nil {
 		log.Fatalf("events consumer: %v", err)
 	}
@@ -86,7 +89,7 @@ func main() {
 		r.Put("/resume", h.UpsertResume)
 	})
 
-	// Temporary stand-in for RabbitMQ until broker is connected.
+	// Debug-only fallback; real path is RabbitMQ.
 	r.Post("/api/v1/internal/events/user-created", h.UserCreatedHook)
 
 	srv := &http.Server{

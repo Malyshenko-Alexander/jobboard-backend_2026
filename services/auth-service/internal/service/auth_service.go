@@ -32,7 +32,7 @@ func NewAuthService(users *repository.UserRepository, tokens *authtoken.Manager,
 	return &AuthService{users: users, tokens: tokens, publisher: publisher}
 }
 
-// Register creates a user, publishes user.created (stub for now), returns JWT.
+// Register creates a user, publishes user.created, returns JWT.
 func (s *AuthService) Register(ctx context.Context, req model.RegisterRequest) (model.AuthResponse, error) {
 	email := strings.TrimSpace(strings.ToLower(req.Email))
 	password := strings.TrimSpace(req.Password)
@@ -58,7 +58,7 @@ func (s *AuthService) Register(ctx context.Context, req model.RegisterRequest) (
 		return model.AuthResponse{}, err
 	}
 
-	// Notify other services to create an empty profile. Stub for now.
+	// Notify other services to create an empty profile via RabbitMQ.
 	_ = s.publisher.PublishUserCreated(ctx, user.ID, user.Role, user.Email)
 
 	token, err := s.tokens.Issue(user.ID, user.Email, user.Role)

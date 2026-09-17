@@ -50,14 +50,20 @@ func main() {
 	}
 
 	tokens := authtoken.NewManager(cfg.JWTSecret)
-	publisher := events.NewStubPublisher()
+	publisher, err := events.NewRabbitPublisher(cfg.RabbitURL)
+	if err != nil {
+		log.Fatalf("rabbit publisher: %v", err)
+	}
 	defer publisher.Close()
 
 	repo := repository.NewVacancyRepository(pool)
 	employerClient := client.NewEmployerClient(cfg.EmployerServiceURL)
 	vacSvc := service.NewVacancyService(repo, employerClient, publisher)
 
-	consumer := events.NewStubConsumer(vacSvc)
+	consumer, err := events.NewRabbitConsumer(cfg.RabbitURL, vacSvc)
+	if err != nil {
+		log.Fatalf("rabbit consumer: %v", err)
+	}
 	if err := consumer.Start(ctx); err != nil {
 		log.Fatalf("events consumer: %v", err)
 	}
