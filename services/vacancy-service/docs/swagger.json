@@ -1,0 +1,508 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "Vacancy search, details and employer CRUD microservice.",
+        "title": "Vacancy Service API",
+        "contact": {},
+        "version": "1.0"
+    },
+    "host": "localhost:8084",
+    "basePath": "/",
+    "paths": {
+        "/api/v1/internal/events/employer-updated": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "internal"
+                ],
+                "summary": "Stub hook for employer.updated event",
+                "parameters": [
+                    {
+                        "description": "employer.updated payload",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_study_jobboard_vacancy-service_internal_model.EmployerUpdatedEvent"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_study_jobboard_vacancy-service_internal_model.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_study_jobboard_vacancy-service_internal_model.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/vacancies": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "vacancies"
+                ],
+                "summary": "Search vacancies",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Industry filter",
+                        "name": "industry",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Minimum salary",
+                        "name": "salary_from",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Maximum salary",
+                        "name": "salary_to",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Max required experience (candidate years)",
+                        "name": "experience_years",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/github_com_study_jobboard_vacancy-service_internal_model.Vacancy"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_study_jobboard_vacancy-service_internal_model.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "vacancies"
+                ],
+                "summary": "Create vacancy",
+                "parameters": [
+                    {
+                        "description": "Vacancy payload",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_study_jobboard_vacancy-service_internal_model.CreateVacancyRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_study_jobboard_vacancy-service_internal_model.Vacancy"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_study_jobboard_vacancy-service_internal_model.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_study_jobboard_vacancy-service_internal_model.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_study_jobboard_vacancy-service_internal_model.ErrorResponse"
+                        }
+                    },
+                    "502": {
+                        "description": "Bad Gateway",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_study_jobboard_vacancy-service_internal_model.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/vacancies/{id}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "vacancies"
+                ],
+                "summary": "Vacancy details",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Vacancy id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_study_jobboard_vacancy-service_internal_model.VacancyDetails"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_study_jobboard_vacancy-service_internal_model.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_study_jobboard_vacancy-service_internal_model.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "vacancies"
+                ],
+                "summary": "Update own vacancy",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Vacancy id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Vacancy payload",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_study_jobboard_vacancy-service_internal_model.UpdateVacancyRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_study_jobboard_vacancy-service_internal_model.Vacancy"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_study_jobboard_vacancy-service_internal_model.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_study_jobboard_vacancy-service_internal_model.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_study_jobboard_vacancy-service_internal_model.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_study_jobboard_vacancy-service_internal_model.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "tags": [
+                    "vacancies"
+                ],
+                "summary": "Deactivate own vacancy",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Vacancy id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_study_jobboard_vacancy-service_internal_model.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_study_jobboard_vacancy-service_internal_model.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_study_jobboard_vacancy-service_internal_model.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "github_com_study_jobboard_vacancy-service_internal_model.CompanyInfo": {
+            "type": "object",
+            "properties": {
+                "city": {
+                    "type": "string"
+                },
+                "company_name": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "website": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_study_jobboard_vacancy-service_internal_model.CreateVacancyRequest": {
+            "type": "object",
+            "properties": {
+                "city": {
+                    "type": "string",
+                    "example": "Moscow"
+                },
+                "description": {
+                    "type": "string",
+                    "example": "Build microservices"
+                },
+                "experience_years": {
+                    "type": "integer",
+                    "example": 2
+                },
+                "industry": {
+                    "type": "string",
+                    "example": "IT"
+                },
+                "requirements": {
+                    "type": "string",
+                    "example": "Go, PostgreSQL"
+                },
+                "salary_from": {
+                    "type": "integer",
+                    "example": 150000
+                },
+                "salary_to": {
+                    "type": "integer",
+                    "example": 250000
+                },
+                "title": {
+                    "type": "string",
+                    "example": "Go Developer"
+                }
+            }
+        },
+        "github_com_study_jobboard_vacancy-service_internal_model.EmployerUpdatedEvent": {
+            "type": "object",
+            "properties": {
+                "city": {
+                    "type": "string"
+                },
+                "company_name": {
+                    "type": "string"
+                },
+                "employer_id": {
+                    "type": "string"
+                },
+                "event": {
+                    "type": "string"
+                },
+                "occurred_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_study_jobboard_vacancy-service_internal_model.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string",
+                    "example": "vacancy not found"
+                }
+            }
+        },
+        "github_com_study_jobboard_vacancy-service_internal_model.UpdateVacancyRequest": {
+            "type": "object",
+            "properties": {
+                "city": {
+                    "type": "string",
+                    "example": "Moscow"
+                },
+                "description": {
+                    "type": "string",
+                    "example": "Lead backend work"
+                },
+                "experience_years": {
+                    "type": "integer",
+                    "example": 3
+                },
+                "industry": {
+                    "type": "string",
+                    "example": "IT"
+                },
+                "is_active": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "requirements": {
+                    "type": "string",
+                    "example": "Go, RabbitMQ"
+                },
+                "salary_from": {
+                    "type": "integer",
+                    "example": 200000
+                },
+                "salary_to": {
+                    "type": "integer",
+                    "example": 300000
+                },
+                "title": {
+                    "type": "string",
+                    "example": "Senior Go Developer"
+                }
+            }
+        },
+        "github_com_study_jobboard_vacancy-service_internal_model.Vacancy": {
+            "type": "object",
+            "properties": {
+                "city": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "employer_id": {
+                    "type": "string"
+                },
+                "experience_years": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "industry": {
+                    "type": "string"
+                },
+                "is_active": {
+                    "type": "boolean"
+                },
+                "requirements": {
+                    "type": "string"
+                },
+                "salary_from": {
+                    "type": "integer"
+                },
+                "salary_to": {
+                    "type": "integer"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_study_jobboard_vacancy-service_internal_model.VacancyDetails": {
+            "type": "object",
+            "properties": {
+                "company": {
+                    "$ref": "#/definitions/github_com_study_jobboard_vacancy-service_internal_model.CompanyInfo"
+                },
+                "vacancy": {
+                    "$ref": "#/definitions/github_com_study_jobboard_vacancy-service_internal_model.Vacancy"
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "description": "Type \"Bearer\" followed by a space and JWT.",
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
+    }
+}

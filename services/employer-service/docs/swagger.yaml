@@ -1,0 +1,202 @@
+basePath: /
+definitions:
+  github_com_study_jobboard_employer-service_internal_model.CompanyPublic:
+    properties:
+      city:
+        type: string
+      company_name:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      website:
+        type: string
+    type: object
+  github_com_study_jobboard_employer-service_internal_model.EmployerProfile:
+    properties:
+      city:
+        type: string
+      company_name:
+        type: string
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: string
+      website:
+        type: string
+    type: object
+  github_com_study_jobboard_employer-service_internal_model.ErrorResponse:
+    properties:
+      error:
+        example: profile not found
+        type: string
+    type: object
+  github_com_study_jobboard_employer-service_internal_model.UpdateProfileRequest:
+    properties:
+      city:
+        example: Moscow
+        type: string
+      company_name:
+        example: Acme LLC
+        type: string
+      description:
+        example: We build cool stuff
+        type: string
+      website:
+        example: https://acme.example
+        type: string
+    type: object
+  github_com_study_jobboard_employer-service_internal_model.UserCreatedEvent:
+    properties:
+      email:
+        type: string
+      event:
+        type: string
+      occurred_at:
+        type: string
+      role:
+        type: string
+      user_id:
+        type: string
+    type: object
+host: localhost:8083
+info:
+  contact: {}
+  description: Employer cabinet and public company info microservice.
+  title: Employer Service API
+  version: "1.0"
+paths:
+  /api/v1/employer/companies/{id}:
+    get:
+      description: Used by vacancy-service for vacancy details page
+      parameters:
+      - description: Employer profile id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_study_jobboard_employer-service_internal_model.CompanyPublic'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_study_jobboard_employer-service_internal_model.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_study_jobboard_employer-service_internal_model.ErrorResponse'
+      summary: Get public company info
+      tags:
+      - companies
+  /api/v1/employer/profile:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_study_jobboard_employer-service_internal_model.EmployerProfile'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_study_jobboard_employer-service_internal_model.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/github_com_study_jobboard_employer-service_internal_model.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_study_jobboard_employer-service_internal_model.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get employer company profile
+      tags:
+      - employer
+    put:
+      consumes:
+      - application/json
+      description: Updates company data and publishes employer.updated event (stub).
+      parameters:
+      - description: Company payload
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_study_jobboard_employer-service_internal_model.UpdateProfileRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_study_jobboard_employer-service_internal_model.EmployerProfile'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_study_jobboard_employer-service_internal_model.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_study_jobboard_employer-service_internal_model.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/github_com_study_jobboard_employer-service_internal_model.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_study_jobboard_employer-service_internal_model.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Update employer company profile
+      tags:
+      - employer
+  /api/v1/internal/events/user-created:
+    post:
+      consumes:
+      - application/json
+      description: Temporary HTTP stand-in for RabbitMQ consumer
+      parameters:
+      - description: user.created payload
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_study_jobboard_employer-service_internal_model.UserCreatedEvent'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_study_jobboard_employer-service_internal_model.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_study_jobboard_employer-service_internal_model.ErrorResponse'
+      summary: Stub hook for user.created event
+      tags:
+      - internal
+securityDefinitions:
+  BearerAuth:
+    description: Type "Bearer" followed by a space and JWT.
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

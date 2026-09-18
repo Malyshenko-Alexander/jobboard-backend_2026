@@ -1,0 +1,275 @@
+basePath: /
+definitions:
+  github_com_study_jobboard_applicant-service_internal_model.ApplicantProfile:
+    properties:
+      about:
+        type: string
+      city:
+        type: string
+      created_at:
+        type: string
+      full_name:
+        type: string
+      id:
+        type: string
+      phone:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: string
+    type: object
+  github_com_study_jobboard_applicant-service_internal_model.ErrorResponse:
+    properties:
+      error:
+        example: profile not found
+        type: string
+    type: object
+  github_com_study_jobboard_applicant-service_internal_model.Resume:
+    properties:
+      applicant_id:
+        type: string
+      created_at:
+        type: string
+      desired_salary:
+        type: integer
+      education:
+        type: string
+      experience_years:
+        type: integer
+      id:
+        type: string
+      is_active:
+        type: boolean
+      skills:
+        type: string
+      summary:
+        type: string
+      title:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  github_com_study_jobboard_applicant-service_internal_model.UpdateProfileRequest:
+    properties:
+      about:
+        example: Backend developer
+        type: string
+      city:
+        example: Moscow
+        type: string
+      full_name:
+        example: Ivan Ivanov
+        type: string
+      phone:
+        example: "+79001234567"
+        type: string
+    type: object
+  github_com_study_jobboard_applicant-service_internal_model.UpsertResumeRequest:
+    properties:
+      desired_salary:
+        example: 150000
+        type: integer
+      education:
+        example: BS Computer Science
+        type: string
+      experience_years:
+        example: 2
+        type: integer
+      is_active:
+        example: true
+        type: boolean
+      skills:
+        example: Go, PostgreSQL, RabbitMQ
+        type: string
+      summary:
+        example: 2 years of backend experience
+        type: string
+      title:
+        example: Go Developer
+        type: string
+    type: object
+  github_com_study_jobboard_applicant-service_internal_model.UserCreatedEvent:
+    properties:
+      email:
+        type: string
+      event:
+        type: string
+      occurred_at:
+        type: string
+      role:
+        type: string
+      user_id:
+        type: string
+    type: object
+host: localhost:8082
+info:
+  contact: {}
+  description: Applicant cabinet microservice (profile + resume).
+  title: Applicant Service API
+  version: "1.0"
+paths:
+  /api/v1/applicant/profile:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_study_jobboard_applicant-service_internal_model.ApplicantProfile'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_study_jobboard_applicant-service_internal_model.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/github_com_study_jobboard_applicant-service_internal_model.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_study_jobboard_applicant-service_internal_model.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get applicant profile
+      tags:
+      - applicant
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Profile payload
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_study_jobboard_applicant-service_internal_model.UpdateProfileRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_study_jobboard_applicant-service_internal_model.ApplicantProfile'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_study_jobboard_applicant-service_internal_model.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_study_jobboard_applicant-service_internal_model.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/github_com_study_jobboard_applicant-service_internal_model.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_study_jobboard_applicant-service_internal_model.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Update applicant profile
+      tags:
+      - applicant
+  /api/v1/applicant/resume:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_study_jobboard_applicant-service_internal_model.Resume'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_study_jobboard_applicant-service_internal_model.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/github_com_study_jobboard_applicant-service_internal_model.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_study_jobboard_applicant-service_internal_model.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get active resume
+      tags:
+      - applicant
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Resume payload
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_study_jobboard_applicant-service_internal_model.UpsertResumeRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_study_jobboard_applicant-service_internal_model.Resume'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_study_jobboard_applicant-service_internal_model.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_study_jobboard_applicant-service_internal_model.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/github_com_study_jobboard_applicant-service_internal_model.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_study_jobboard_applicant-service_internal_model.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Create or update active resume
+      tags:
+      - applicant
+  /api/v1/internal/events/user-created:
+    post:
+      consumes:
+      - application/json
+      description: Temporary HTTP stand-in for RabbitMQ consumer. Remove when real
+        AMQP consumer is wired.
+      parameters:
+      - description: user.created payload
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_study_jobboard_applicant-service_internal_model.UserCreatedEvent'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_study_jobboard_applicant-service_internal_model.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_study_jobboard_applicant-service_internal_model.ErrorResponse'
+      summary: Stub hook for user.created event
+      tags:
+      - internal
+securityDefinitions:
+  BearerAuth:
+    description: Type "Bearer" followed by a space and JWT.
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

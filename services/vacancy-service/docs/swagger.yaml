@@ -1,0 +1,335 @@
+basePath: /
+definitions:
+  github_com_study_jobboard_vacancy-service_internal_model.CompanyInfo:
+    properties:
+      city:
+        type: string
+      company_name:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      website:
+        type: string
+    type: object
+  github_com_study_jobboard_vacancy-service_internal_model.CreateVacancyRequest:
+    properties:
+      city:
+        example: Moscow
+        type: string
+      description:
+        example: Build microservices
+        type: string
+      experience_years:
+        example: 2
+        type: integer
+      industry:
+        example: IT
+        type: string
+      requirements:
+        example: Go, PostgreSQL
+        type: string
+      salary_from:
+        example: 150000
+        type: integer
+      salary_to:
+        example: 250000
+        type: integer
+      title:
+        example: Go Developer
+        type: string
+    type: object
+  github_com_study_jobboard_vacancy-service_internal_model.EmployerUpdatedEvent:
+    properties:
+      city:
+        type: string
+      company_name:
+        type: string
+      employer_id:
+        type: string
+      event:
+        type: string
+      occurred_at:
+        type: string
+    type: object
+  github_com_study_jobboard_vacancy-service_internal_model.ErrorResponse:
+    properties:
+      error:
+        example: vacancy not found
+        type: string
+    type: object
+  github_com_study_jobboard_vacancy-service_internal_model.UpdateVacancyRequest:
+    properties:
+      city:
+        example: Moscow
+        type: string
+      description:
+        example: Lead backend work
+        type: string
+      experience_years:
+        example: 3
+        type: integer
+      industry:
+        example: IT
+        type: string
+      is_active:
+        example: true
+        type: boolean
+      requirements:
+        example: Go, RabbitMQ
+        type: string
+      salary_from:
+        example: 200000
+        type: integer
+      salary_to:
+        example: 300000
+        type: integer
+      title:
+        example: Senior Go Developer
+        type: string
+    type: object
+  github_com_study_jobboard_vacancy-service_internal_model.Vacancy:
+    properties:
+      city:
+        type: string
+      created_at:
+        type: string
+      description:
+        type: string
+      employer_id:
+        type: string
+      experience_years:
+        type: integer
+      id:
+        type: string
+      industry:
+        type: string
+      is_active:
+        type: boolean
+      requirements:
+        type: string
+      salary_from:
+        type: integer
+      salary_to:
+        type: integer
+      title:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  github_com_study_jobboard_vacancy-service_internal_model.VacancyDetails:
+    properties:
+      company:
+        $ref: '#/definitions/github_com_study_jobboard_vacancy-service_internal_model.CompanyInfo'
+      vacancy:
+        $ref: '#/definitions/github_com_study_jobboard_vacancy-service_internal_model.Vacancy'
+    type: object
+host: localhost:8084
+info:
+  contact: {}
+  description: Vacancy search, details and employer CRUD microservice.
+  title: Vacancy Service API
+  version: "1.0"
+paths:
+  /api/v1/internal/events/employer-updated:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: employer.updated payload
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_study_jobboard_vacancy-service_internal_model.EmployerUpdatedEvent'
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_study_jobboard_vacancy-service_internal_model.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_study_jobboard_vacancy-service_internal_model.ErrorResponse'
+      summary: Stub hook for employer.updated event
+      tags:
+      - internal
+  /api/v1/vacancies:
+    get:
+      parameters:
+      - description: Industry filter
+        in: query
+        name: industry
+        type: string
+      - description: Minimum salary
+        in: query
+        name: salary_from
+        type: integer
+      - description: Maximum salary
+        in: query
+        name: salary_to
+        type: integer
+      - description: Max required experience (candidate years)
+        in: query
+        name: experience_years
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/github_com_study_jobboard_vacancy-service_internal_model.Vacancy'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_study_jobboard_vacancy-service_internal_model.ErrorResponse'
+      summary: Search vacancies
+      tags:
+      - vacancies
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Vacancy payload
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_study_jobboard_vacancy-service_internal_model.CreateVacancyRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/github_com_study_jobboard_vacancy-service_internal_model.Vacancy'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_study_jobboard_vacancy-service_internal_model.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_study_jobboard_vacancy-service_internal_model.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/github_com_study_jobboard_vacancy-service_internal_model.ErrorResponse'
+        "502":
+          description: Bad Gateway
+          schema:
+            $ref: '#/definitions/github_com_study_jobboard_vacancy-service_internal_model.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Create vacancy
+      tags:
+      - vacancies
+  /api/v1/vacancies/{id}:
+    delete:
+      parameters:
+      - description: Vacancy id
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_study_jobboard_vacancy-service_internal_model.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/github_com_study_jobboard_vacancy-service_internal_model.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_study_jobboard_vacancy-service_internal_model.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Deactivate own vacancy
+      tags:
+      - vacancies
+    get:
+      parameters:
+      - description: Vacancy id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_study_jobboard_vacancy-service_internal_model.VacancyDetails'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_study_jobboard_vacancy-service_internal_model.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_study_jobboard_vacancy-service_internal_model.ErrorResponse'
+      summary: Vacancy details
+      tags:
+      - vacancies
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Vacancy id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Vacancy payload
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_study_jobboard_vacancy-service_internal_model.UpdateVacancyRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_study_jobboard_vacancy-service_internal_model.Vacancy'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_study_jobboard_vacancy-service_internal_model.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_study_jobboard_vacancy-service_internal_model.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/github_com_study_jobboard_vacancy-service_internal_model.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_study_jobboard_vacancy-service_internal_model.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Update own vacancy
+      tags:
+      - vacancies
+securityDefinitions:
+  BearerAuth:
+    description: Type "Bearer" followed by a space and JWT.
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
