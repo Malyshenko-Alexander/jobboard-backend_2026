@@ -69,7 +69,7 @@ func main() {
 	}
 	defer consumer.Close()
 
-	h := handler.NewVacancyHandler(vacSvc, tokens, consumer)
+	h := handler.NewVacancyHandler(vacSvc, tokens)
 
 	r := chi.NewRouter()
 	r.Use(middleware.RequestID)
@@ -96,8 +96,6 @@ func main() {
 		r.Put("/api/v1/vacancies/{id}", h.UpdateVacancy)
 		r.Delete("/api/v1/vacancies/{id}", h.DeleteVacancy)
 	})
-
-	r.Post("/api/v1/internal/events/employer-updated", h.EmployerUpdatedHook)
 
 	srv := &http.Server{
 		Addr:              ":" + cfg.HTTPPort,

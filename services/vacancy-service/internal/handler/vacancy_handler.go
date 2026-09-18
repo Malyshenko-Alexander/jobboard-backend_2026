@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"io"
 	"net/http"
 	"strconv"
 	"strings"
@@ -24,19 +23,14 @@ type vacancyService interface {
 	GetDetails(ctx context.Context, id uuid.UUID) (model.VacancyDetails, error)
 }
 
-type employerUpdatedHandler interface {
-	HandleEmployerUpdated(ctx context.Context, raw []byte) error
-}
-
 // VacancyHandler exposes HTTP endpoints for vacancies.
 type VacancyHandler struct {
-	svc      vacancyService
-	tokens   *authtoken.Manager
-	consumer employerUpdatedHandler
+	svc    vacancyService
+	tokens *authtoken.Manager
 }
 
-func NewVacancyHandler(svc vacancyService, tokens *authtoken.Manager, consumer employerUpdatedHandler) *VacancyHandler {
-	return &VacancyHandler{svc: svc, tokens: tokens, consumer: consumer}
+func NewVacancyHandler(svc vacancyService, tokens *authtoken.Manager) *VacancyHandler {
+	return &VacancyHandler{svc: svc, tokens: tokens}
 }
 
 // ListVacancies godoc
@@ -191,28 +185,6 @@ func (h *VacancyHandler) DeleteVacancy(w http.ResponseWriter, r *http.Request) {
 
 	if err := h.svc.Delete(r.Context(), TokenFromContext(r.Context()), id); err != nil {
 		writeServiceError(w, err)
-		return
-	}
-	w.WriteHeader(http.StatusNoContent)
-}
-
-// EmployerUpdatedHook godoc
-// @Summary      Debug hook for employer.updated (prefer RabbitMQ)
-// @Tags         internal
-// @Accept       json
-// @Param        body  body  model.EmployerUpdatedEvent  true  "employer.updated payload"
-// @Success      204
-// @Failure      400  {object}  model.ErrorResponse
-// @Failure      500  {object}  model.ErrorResponse
-// @Router       /api/v1/internal/events/employer-updated [post]
-func (h *VacancyHandler) EmployerUpdatedHook(w http.ResponseWriter, r *http.Request) {
-	raw, err := io.ReadAll(r.Body)
-	if err != nil {
-		writeError(w, http.StatusBadRequest, "invalid body")
-		return
-	}
-	if err := h.consumer.HandleEmployerUpdated(r.Context(), raw); err != nil {
-		writeError(w, http.StatusInternalServerError, "failed to handle event")
 		return
 	}
 	w.WriteHeader(http.StatusNoContent)

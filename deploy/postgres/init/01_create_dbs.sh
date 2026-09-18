@@ -1,8 +1,11 @@
--- Create one database (and role) per microservice.
-CREATE USER auth WITH PASSWORD 'auth';
-CREATE USER applicant WITH PASSWORD 'applicant';
-CREATE USER employer WITH PASSWORD 'employer';
-CREATE USER vacancy WITH PASSWORD 'vacancy';
+#!/bin/bash
+set -e
+
+psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" <<-EOSQL
+CREATE USER auth WITH PASSWORD '${AUTH_DB_PASSWORD}';
+CREATE USER applicant WITH PASSWORD '${APPLICANT_DB_PASSWORD}';
+CREATE USER employer WITH PASSWORD '${EMPLOYER_DB_PASSWORD}';
+CREATE USER vacancy WITH PASSWORD '${VACANCY_DB_PASSWORD}';
 
 CREATE DATABASE auth_db OWNER auth;
 CREATE DATABASE applicant_db OWNER applicant;
@@ -13,3 +16,4 @@ GRANT ALL PRIVILEGES ON DATABASE auth_db TO auth;
 GRANT ALL PRIVILEGES ON DATABASE applicant_db TO applicant;
 GRANT ALL PRIVILEGES ON DATABASE employer_db TO employer;
 GRANT ALL PRIVILEGES ON DATABASE vacancy_db TO vacancy;
+EOSQL

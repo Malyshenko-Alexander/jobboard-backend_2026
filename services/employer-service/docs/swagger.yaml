@@ -53,19 +53,6 @@ definitions:
         example: https://acme.example
         type: string
     type: object
-  github_com_study_jobboard_employer-service_internal_model.UserCreatedEvent:
-    properties:
-      email:
-        type: string
-      event:
-        type: string
-      occurred_at:
-        type: string
-      role:
-        type: string
-      user_id:
-        type: string
-    type: object
 host: localhost:8083
 info:
   contact: {}
@@ -129,7 +116,7 @@ paths:
     put:
       consumes:
       - application/json
-      description: Updates company data and publishes employer.updated event (stub).
+      description: Updates company data and publishes employer.updated to RabbitMQ.
       parameters:
       - description: Company payload
         in: body
@@ -165,34 +152,6 @@ paths:
       summary: Update employer company profile
       tags:
       - employer
-  /api/v1/internal/events/user-created:
-    post:
-      consumes:
-      - application/json
-      description: Temporary HTTP stand-in for RabbitMQ consumer
-      parameters:
-      - description: user.created payload
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/github_com_study_jobboard_employer-service_internal_model.UserCreatedEvent'
-      produces:
-      - application/json
-      responses:
-        "204":
-          description: No Content
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/github_com_study_jobboard_employer-service_internal_model.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/github_com_study_jobboard_employer-service_internal_model.ErrorResponse'
-      summary: Stub hook for user.created event
-      tags:
-      - internal
 securityDefinitions:
   BearerAuth:
     description: Type "Bearer" followed by a space and JWT.

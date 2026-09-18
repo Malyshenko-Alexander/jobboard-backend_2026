@@ -67,7 +67,7 @@ func main() {
 	}
 	defer consumer.Close()
 
-	h := handler.NewEmployerHandler(empSvc, tokens, consumer)
+	h := handler.NewEmployerHandler(empSvc, tokens)
 
 	r := chi.NewRouter()
 	r.Use(middleware.RequestID)
@@ -94,8 +94,6 @@ func main() {
 			r.Put("/profile", h.UpdateProfile)
 		})
 	})
-
-	r.Post("/api/v1/internal/events/user-created", h.UserCreatedHook)
 
 	srv := &http.Server{
 		Addr:              ":" + cfg.HTTPPort,

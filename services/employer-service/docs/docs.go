@@ -103,7 +103,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Updates company data and publishes employer.updated event (stub).",
+                "description": "Updates company data and publishes employer.updated to RabbitMQ.",
                 "consumes": [
                     "application/json"
                 ],
@@ -152,49 +152,6 @@ const docTemplate = `{
                     },
                     "404": {
                         "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/github_com_study_jobboard_employer-service_internal_model.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/internal/events/user-created": {
-            "post": {
-                "description": "Temporary HTTP stand-in for RabbitMQ consumer",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "internal"
-                ],
-                "summary": "Stub hook for user.created event",
-                "parameters": [
-                    {
-                        "description": "user.created payload",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/github_com_study_jobboard_employer-service_internal_model.UserCreatedEvent"
-                        }
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "No Content"
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/github_com_study_jobboard_employer-service_internal_model.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/github_com_study_jobboard_employer-service_internal_model.ErrorResponse"
                         }
@@ -280,26 +237,6 @@ const docTemplate = `{
                 "website": {
                     "type": "string",
                     "example": "https://acme.example"
-                }
-            }
-        },
-        "github_com_study_jobboard_employer-service_internal_model.UserCreatedEvent": {
-            "type": "object",
-            "properties": {
-                "email": {
-                    "type": "string"
-                },
-                "event": {
-                    "type": "string"
-                },
-                "occurred_at": {
-                    "type": "string"
-                },
-                "role": {
-                    "type": "string"
-                },
-                "user_id": {
-                    "type": "string"
                 }
             }
         }

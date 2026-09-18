@@ -3,8 +3,12 @@ services:
     image: postgres:16-alpine
     container_name: jobboard-postgres
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      AUTH_DB_PASSWORD: ${AUTH_DB_PASSWORD:-auth}
+      APPLICANT_DB_PASSWORD: ${APPLICANT_DB_PASSWORD:-applicant}
+      EMPLOYER_DB_PASSWORD: ${EMPLOYER_DB_PASSWORD:-employer}
+      VACANCY_DB_PASSWORD: ${VACANCY_DB_PASSWORD:-vacancy}
     ports:
       - "5432:5432"
     volumes:
@@ -15,7 +19,7 @@ services:
       - ./services/employer-service/migrations:/schemas/employer:ro
       - ./services/vacancy-service/migrations:/schemas/vacancy:ro
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER"]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -27,8 +31,8 @@ services:
       - "5672:5672"
       - "15672:15672"
     environment:
-      RABBITMQ_DEFAULT_USER: guest
-      RABBITMQ_DEFAULT_PASS: guest
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-guest}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:-guest}
     healthcheck:
       test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
       interval: 5s
@@ -41,10 +45,10 @@ services:
     restart: unless-stopped
     environment:
       HTTP_PORT: "8081"
-      DATABASE_URL: postgres://auth:auth@postgres:5432/auth_db?sslmode=disable
+      DATABASE_URL: postgres://auth:${AUTH_DB_PASSWORD:-auth}@postgres:5432/auth_db?sslmode=disable
       JWT_SECRET: ${JWT_SECRET:-dev-secret-change-me}
       JWT_EXPIRE_HOURS: "24"
-      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672/
+      RABBITMQ_URL: amqp://${RABBITMQ_USER:-guest}:${RABBITMQ_PASSWORD:-guest}@rabbitmq:5672/
     ports:
       - "8081:8081"
     depends_on:
@@ -59,9 +63,9 @@ services:
     restart: unless-stopped
     environment:
       HTTP_PORT: "8082"
-      DATABASE_URL: postgres://applicant:applicant@postgres:5432/applicant_db?sslmode=disable
+      DATABASE_URL: postgres://applicant:${APPLICANT_DB_PASSWORD:-applicant}@postgres:5432/applicant_db?sslmode=disable
       JWT_SECRET: ${JWT_SECRET:-dev-secret-change-me}
-      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672/
+      RABBITMQ_URL: amqp://${RABBITMQ_USER:-guest}:${RABBITMQ_PASSWORD:-guest}@rabbitmq:5672/
     ports:
       - "8082:8082"
     depends_on:
@@ -76,9 +80,9 @@ services:
     restart: unless-stopped
     environment:
       HTTP_PORT: "8083"
-      DATABASE_URL: postgres://employer:employer@postgres:5432/employer_db?sslmode=disable
+      DATABASE_URL: postgres://employer:${EMPLOYER_DB_PASSWORD:-employer}@postgres:5432/employer_db?sslmode=disable
       JWT_SECRET: ${JWT_SECRET:-dev-secret-change-me}
-      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672/
+      RABBITMQ_URL: amqp://${RABBITMQ_USER:-guest}:${RABBITMQ_PASSWORD:-guest}@rabbitmq:5672/
     ports:
       - "8083:8083"
     depends_on:
@@ -93,9 +97,9 @@ services:
     restart: unless-stopped
     environment:
       HTTP_PORT: "8084"
-      DATABASE_URL: postgres://vacancy:vacancy@postgres:5432/vacancy_db?sslmode=disable
+      DATABASE_URL: postgres://vacancy:${VACANCY_DB_PASSWORD:-vacancy}@postgres:5432/vacancy_db?sslmode=disable
       JWT_SECRET: ${JWT_SECRET:-dev-secret-change-me}
-      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672/
+      RABBITMQ_URL: amqp://${RABBITMQ_USER:-guest}:${RABBITMQ_PASSWORD:-guest}@rabbitmq:5672/
       EMPLOYER_SERVICE_URL: http://employer-service:8083
     ports:
       - "8084:8084"

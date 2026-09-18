@@ -15,45 +15,6 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/api/v1/internal/events/employer-updated": {
-            "post": {
-                "consumes": [
-                    "application/json"
-                ],
-                "tags": [
-                    "internal"
-                ],
-                "summary": "Stub hook for employer.updated event",
-                "parameters": [
-                    {
-                        "description": "employer.updated payload",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/github_com_study_jobboard_vacancy-service_internal_model.EmployerUpdatedEvent"
-                        }
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "No Content"
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/github_com_study_jobboard_vacancy-service_internal_model.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/github_com_study_jobboard_vacancy-service_internal_model.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/api/v1/vacancies": {
             "get": {
                 "produces": [
@@ -374,26 +335,6 @@ const docTemplate = `{
                 "title": {
                     "type": "string",
                     "example": "Go Developer"
-                }
-            }
-        },
-        "github_com_study_jobboard_vacancy-service_internal_model.EmployerUpdatedEvent": {
-            "type": "object",
-            "properties": {
-                "city": {
-                    "type": "string"
-                },
-                "company_name": {
-                    "type": "string"
-                },
-                "employer_id": {
-                    "type": "string"
-                },
-                "event": {
-                    "type": "string"
-                },
-                "occurred_at": {
-                    "type": "string"
                 }
             }
         },

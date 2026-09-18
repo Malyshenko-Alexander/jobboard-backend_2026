@@ -53,7 +53,7 @@ func main() {
 	resumeRepo := repository.NewResumeRepository(pool)
 	appSvc := service.NewApplicantService(profileRepo, resumeRepo)
 
-	// RabbitMQ consumer for user.created (HTTP hook below is only for manual debug).
+	// RabbitMQ consumer for user.created
 	consumer, err := events.NewRabbitConsumer(cfg.RabbitURL, appSvc)
 	if err != nil {
 		log.Fatalf("rabbit consumer: %v", err)
@@ -63,7 +63,7 @@ func main() {
 	}
 	defer consumer.Close()
 
-	h := handler.NewApplicantHandler(appSvc, tokens, consumer)
+	h := handler.NewApplicantHandler(appSvc, tokens)
 
 	r := chi.NewRouter()
 	r.Use(middleware.RequestID)
@@ -88,9 +88,6 @@ func main() {
 		r.Get("/resume", h.GetResume)
 		r.Put("/resume", h.UpsertResume)
 	})
-
-	// Debug-only fallback; real path is RabbitMQ.
-	r.Post("/api/v1/internal/events/user-created", h.UserCreatedHook)
 
 	srv := &http.Server{
 		Addr:              ":" + cfg.HTTPPort,

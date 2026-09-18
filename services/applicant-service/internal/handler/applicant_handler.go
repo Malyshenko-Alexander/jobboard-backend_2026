@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"io"
 	"net/http"
 	"strings"
 
@@ -21,19 +20,14 @@ type applicantService interface {
 	UpsertResume(ctx context.Context, userID uuid.UUID, req model.UpsertResumeRequest) (model.Resume, error)
 }
 
-type userCreatedHandler interface {
-	HandleUserCreated(ctx context.Context, raw []byte) error
-}
-
 // ApplicantHandler exposes HTTP endpoints for applicant cabinet.
 type ApplicantHandler struct {
-	svc      applicantService
-	tokens   *authtoken.Manager
-	consumer userCreatedHandler
+	svc    applicantService
+	tokens *authtoken.Manager
 }
 
-func NewApplicantHandler(svc applicantService, tokens *authtoken.Manager, consumer userCreatedHandler) *ApplicantHandler {
-	return &ApplicantHandler{svc: svc, tokens: tokens, consumer: consumer}
+func NewApplicantHandler(svc applicantService, tokens *authtoken.Manager) *ApplicantHandler {
+	return &ApplicantHandler{svc: svc, tokens: tokens}
 }
 
 // GetProfile godoc
@@ -132,30 +126,6 @@ func (h *ApplicantHandler) UpsertResume(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 	writeJSON(w, http.StatusOK, resume)
-}
-
-// UserCreatedHook godoc
-// @Summary      Debug hook for user.created (prefer RabbitMQ)
-// @Description  Temporary HTTP stand-in for RabbitMQ consumer. Remove when real AMQP consumer is wired.
-// @Tags         internal
-// @Accept       json
-// @Produce      json
-// @Param        body  body      model.UserCreatedEvent  true  "user.created payload"
-// @Success      204
-// @Failure      400  {object}  model.ErrorResponse
-// @Failure      500  {object}  model.ErrorResponse
-// @Router       /api/v1/internal/events/user-created [post]
-func (h *ApplicantHandler) UserCreatedHook(w http.ResponseWriter, r *http.Request) {
-	raw, err := io.ReadAll(r.Body)
-	if err != nil {
-		writeError(w, http.StatusBadRequest, "invalid body")
-		return
-	}
-	if err := h.consumer.HandleUserCreated(r.Context(), raw); err != nil {
-		writeError(w, http.StatusInternalServerError, "failed to handle event")
-		return
-	}
-	w.WriteHeader(http.StatusNoContent)
 }
 
 // AuthMiddleware validates Bearer JWT and requires applicant role.
