@@ -12,7 +12,6 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/jackc/pgx/v5/pgxpool"
-	httpSwagger "github.com/swaggo/http-swagger"
 	"github.com/study/jobboard/vacancy-service/internal/authtoken"
 	"github.com/study/jobboard/vacancy-service/internal/client"
 	"github.com/study/jobboard/vacancy-service/internal/config"
@@ -20,6 +19,7 @@ import (
 	"github.com/study/jobboard/vacancy-service/internal/handler"
 	"github.com/study/jobboard/vacancy-service/internal/repository"
 	"github.com/study/jobboard/vacancy-service/internal/service"
+	httpSwagger "github.com/swaggo/http-swagger"
 
 	_ "github.com/study/jobboard/vacancy-service/docs"
 )
@@ -88,14 +88,16 @@ func main() {
 	))
 
 	r.Get("/api/v1/vacancies", h.ListVacancies)
-	r.Get("/api/v1/vacancies/{id}", h.GetVacancy)
 
 	r.Group(func(r chi.Router) {
 		r.Use(h.AuthMiddleware)
+		r.Get("/api/v1/vacancies/my", h.ListMyVacancies)
 		r.Post("/api/v1/vacancies", h.CreateVacancy)
 		r.Put("/api/v1/vacancies/{id}", h.UpdateVacancy)
 		r.Delete("/api/v1/vacancies/{id}", h.DeleteVacancy)
 	})
+
+	r.Get("/api/v1/vacancies/{id}", h.GetVacancy)
 
 	srv := &http.Server{
 		Addr:              ":" + cfg.HTTPPort,

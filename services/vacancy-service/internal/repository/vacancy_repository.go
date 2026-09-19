@@ -14,7 +14,6 @@ import (
 
 var ErrNotFound = errors.New("not found")
 
-// VacancyRepository talks to vacancies and company_snapshots.
 type VacancyRepository struct {
 	db *pgxpool.Pool
 }
@@ -101,7 +100,34 @@ func (r *VacancyRepository) Deactivate(ctx context.Context, id uuid.UUID) (model
 	return v, err
 }
 
-// Search returns active vacancies matching optional filters.
+func (r *VacancyRepository) ListByEmployerID(ctx context.Context, employerID uuid.UUID) ([]model.Vacancy, error) {
+	const q = `
+		SELECT id, employer_id, title, description, requirements, industry,
+		       salary_from, salary_to, experience_years, city, is_active, created_at, updated_at
+		FROM vacancies
+		WHERE employer_id = $1
+		ORDER BY created_at DESC
+	`
+	rows, err := r.db.Query(ctx, q, employerID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var list []model.Vacancy
+	for rows.Next() {
+		v, err := r.scan(rows)
+		if err != nil {
+			return nil, err
+		}
+		list = append(list, v)
+	}
+	if list == nil {
+		list = []model.Vacancy{}
+	}
+	return list, rows.Err()
+}
+
 func (r *VacancyRepository) Search(ctx context.Context, f model.SearchFilter) ([]model.Vacancy, error) {
 	var (
 		b    strings.Builder

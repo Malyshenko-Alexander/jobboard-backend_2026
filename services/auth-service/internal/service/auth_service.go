@@ -21,7 +21,6 @@ var (
 	ErrInvalidRole        = errors.New("role must be applicant or employer")
 )
 
-// AuthService contains register / login / me logic.
 type AuthService struct {
 	users     *repository.UserRepository
 	tokens    *authtoken.Manager
@@ -58,7 +57,7 @@ func (s *AuthService) Register(ctx context.Context, req model.RegisterRequest) (
 		return model.AuthResponse{}, err
 	}
 
-	// Notify other services to create an empty profile via RabbitMQ.
+	// Notify other services to create an empty profile
 	_ = s.publisher.PublishUserCreated(ctx, user.ID, user.Role, user.Email)
 
 	token, err := s.tokens.Issue(user.ID, user.Email, user.Role)
@@ -69,7 +68,6 @@ func (s *AuthService) Register(ctx context.Context, req model.RegisterRequest) (
 	return model.AuthResponse{Token: token, User: user.ToResponse()}, nil
 }
 
-// Login checks password and returns JWT.
 func (s *AuthService) Login(ctx context.Context, req model.LoginRequest) (model.AuthResponse, error) {
 	email := strings.TrimSpace(strings.ToLower(req.Email))
 	if email == "" || req.Password == "" {
@@ -96,7 +94,7 @@ func (s *AuthService) Login(ctx context.Context, req model.LoginRequest) (model.
 	return model.AuthResponse{Token: token, User: user.ToResponse()}, nil
 }
 
-// Me returns the current user by id from JWT claims.
+// Me returns the current user by id from JWT
 func (s *AuthService) Me(ctx context.Context, userID uuid.UUID) (model.UserResponse, error) {
 	user, err := s.users.GetByID(ctx, userID)
 	if err != nil {

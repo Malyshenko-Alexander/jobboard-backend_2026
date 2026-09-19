@@ -20,6 +20,7 @@ type vacancyService interface {
 	Update(ctx context.Context, bearerToken string, id uuid.UUID, req model.UpdateVacancyRequest) (model.Vacancy, error)
 	Delete(ctx context.Context, bearerToken string, id uuid.UUID) error
 	Search(ctx context.Context, f model.SearchFilter) ([]model.Vacancy, error)
+	ListMine(ctx context.Context, bearerToken string) ([]model.Vacancy, error)
 	GetDetails(ctx context.Context, id uuid.UUID) (model.VacancyDetails, error)
 }
 
@@ -101,6 +102,26 @@ func (h *VacancyHandler) GetVacancy(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	writeJSON(w, http.StatusOK, details)
+}
+
+// ListMyVacancies godoc
+// @Summary      List my company vacancies
+// @Description  Returns all vacancies of the authenticated employer (including inactive)
+// @Tags         vacancies
+// @Produce      json
+// @Security     BearerAuth
+// @Success      200  {array}   model.Vacancy
+// @Failure      401  {object}  model.ErrorResponse
+// @Failure      403  {object}  model.ErrorResponse
+// @Failure      502  {object}  model.ErrorResponse
+// @Router       /api/v1/vacancies/my [get]
+func (h *VacancyHandler) ListMyVacancies(w http.ResponseWriter, r *http.Request) {
+	list, err := h.svc.ListMine(r.Context(), TokenFromContext(r.Context()))
+	if err != nil {
+		writeServiceError(w, err)
+		return
+	}
+	writeJSON(w, http.StatusOK, list)
 }
 
 // CreateVacancy godoc

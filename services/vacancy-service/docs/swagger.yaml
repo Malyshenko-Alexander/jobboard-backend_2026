@@ -288,6 +288,36 @@ paths:
       summary: Update own vacancy
       tags:
       - vacancies
+  /api/v1/vacancies/my:
+    get:
+      description: Returns all vacancies of the authenticated employer (including
+        inactive)
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/github_com_study_jobboard_vacancy-service_internal_model.Vacancy'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_study_jobboard_vacancy-service_internal_model.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/github_com_study_jobboard_vacancy-service_internal_model.ErrorResponse'
+        "502":
+          description: Bad Gateway
+          schema:
+            $ref: '#/definitions/github_com_study_jobboard_vacancy-service_internal_model.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: List my company vacancies
+      tags:
+      - vacancies
 securityDefinitions:
   BearerAuth:
     description: Type "Bearer" followed by a space and JWT.

@@ -108,6 +108,15 @@ func (s *VacancyService) Search(ctx context.Context, f model.SearchFilter) ([]mo
 	return s.repo.Search(ctx, f)
 }
 
+// ListMine returns all vacancies belonging to the authenticated employer.
+func (s *VacancyService) ListMine(ctx context.Context, bearerToken string) ([]model.Vacancy, error) {
+	employerID, err := s.employer.GetMyEmployerID(ctx, bearerToken)
+	if err != nil {
+		return nil, ErrUpstream
+	}
+	return s.repo.ListByEmployerID(ctx, employerID)
+}
+
 func (s *VacancyService) GetDetails(ctx context.Context, id uuid.UUID) (model.VacancyDetails, error) {
 	v, err := s.repo.GetByID(ctx, id)
 	if errors.Is(err, repository.ErrNotFound) {

@@ -11,7 +11,7 @@ const (
 	RoleEmployer  = "employer"
 )
 
-// User is the auth_db.users row.
+// User is the auth_db.users row
 type User struct {
 	ID           uuid.UUID `json:"id"`
 	Email        string    `json:"email"`
@@ -21,26 +21,26 @@ type User struct {
 	UpdatedAt    time.Time `json:"updated_at"`
 }
 
-// RegisterRequest is the body for POST /auth/register.
+// RegisterRequest
 type RegisterRequest struct {
 	Email    string `json:"email" example:"user@example.com"`
 	Password string `json:"password" example:"secret123"`
 	Role     string `json:"role" example:"applicant" enums:"applicant,employer"`
 }
 
-// LoginRequest is the body for POST /auth/login.
+// LoginRequest
 type LoginRequest struct {
 	Email    string `json:"email" example:"user@example.com"`
 	Password string `json:"password" example:"secret123"`
 }
 
-// AuthResponse is returned after register/login.
+// AuthResponse
 type AuthResponse struct {
 	Token string       `json:"token"`
 	User  UserResponse `json:"user"`
 }
 
-// UserResponse is a safe user DTO without password hash.
+// UserResponse
 type UserResponse struct {
 	ID        uuid.UUID `json:"id" example:"550e8400-e29b-41d4-a716-446655440000"`
 	Email     string    `json:"email" example:"user@example.com"`
@@ -48,7 +48,7 @@ type UserResponse struct {
 	CreatedAt time.Time `json:"created_at"`
 }
 
-// ToResponse maps User to UserResponse.
+// ToResponse maps User to UserResponse
 func (u User) ToResponse() UserResponse {
 	return UserResponse{
 		ID:        u.ID,
@@ -58,7 +58,7 @@ func (u User) ToResponse() UserResponse {
 	}
 }
 
-// ErrorResponse is a simple API error payload.
+// ErrorResponse
 type ErrorResponse struct {
 	Error string `json:"error" example:"invalid credentials"`
 }

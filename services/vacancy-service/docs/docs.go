@@ -129,6 +129,52 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/vacancies/my": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Returns all vacancies of the authenticated employer (including inactive)",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "vacancies"
+                ],
+                "summary": "List my company vacancies",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/github_com_study_jobboard_vacancy-service_internal_model.Vacancy"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_study_jobboard_vacancy-service_internal_model.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_study_jobboard_vacancy-service_internal_model.ErrorResponse"
+                        }
+                    },
+                    "502": {
+                        "description": "Bad Gateway",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_study_jobboard_vacancy-service_internal_model.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/vacancies/{id}": {
             "get": {
                 "produces": [

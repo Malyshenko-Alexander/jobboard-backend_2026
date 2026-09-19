@@ -12,7 +12,6 @@ import (
 
 var ErrNotFound = errors.New("user not found")
 
-// UserRepository talks to auth_db.users.
 type UserRepository struct {
 	db *pgxpool.Pool
 }
@@ -21,7 +20,7 @@ func NewUserRepository(db *pgxpool.Pool) *UserRepository {
 	return &UserRepository{db: db}
 }
 
-// Create inserts a new user and returns the stored row.
+// Create inserts a new user
 func (r *UserRepository) Create(ctx context.Context, email, passwordHash, role string) (model.User, error) {
 	const q = `
 		INSERT INTO users (email, password_hash, role)
@@ -36,7 +35,7 @@ func (r *UserRepository) Create(ctx context.Context, email, passwordHash, role s
 	return u, err
 }
 
-// GetByEmail finds a user by email.
+// GetByEmail finds a user by email
 func (r *UserRepository) GetByEmail(ctx context.Context, email string) (model.User, error) {
 	const q = `
 		SELECT id, email, password_hash, role, created_at, updated_at
@@ -46,7 +45,7 @@ func (r *UserRepository) GetByEmail(ctx context.Context, email string) (model.Us
 	return r.scanOne(ctx, q, email)
 }
 
-// GetByID finds a user by id.
+// GetByID finds a user by id
 func (r *UserRepository) GetByID(ctx context.Context, id uuid.UUID) (model.User, error) {
 	const q = `
 		SELECT id, email, password_hash, role, created_at, updated_at
