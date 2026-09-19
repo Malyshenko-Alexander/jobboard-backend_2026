@@ -55,6 +55,8 @@ cp .env.example .env
 ## 4. Сборка
 
 ```bash
+sudo usermod -aG docker <USER>
+sudo systemctl status docker
 docker compose up --build -d
 ```
 
